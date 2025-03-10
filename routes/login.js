@@ -5,6 +5,53 @@ const { connection } = require('../config/config.db');
 
 const SECRET_KEY = 'contraseña_secreta';
 
+/**
+ * @swagger
+ * tags:
+ *   name: Autenticación
+ *   description: Endpoints relacionados con la autenticación de usuarios
+ */
+
+/**
+ * @swagger
+ * /api/login:
+ *   post:
+ *     summary: Iniciar sesión y obtener un token JWT
+ *     tags: [Autenticación]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - usuario
+ *               - contraseña
+ *             properties:
+ *               usuario:
+ *                 type: string
+ *                 example: "admin"
+ *               contraseña:
+ *                 type: string
+ *                 example: "123456"
+ *     responses:
+ *       200:
+ *         description: Inicio de sesión exitoso, devuelve un token JWT.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 token:
+ *                   type: string
+ *                   example: "eyJhbGciOiJIUzI1NiIsIn..."
+ *       401:
+ *         description: Usuario no encontrado o contraseña incorrecta.
+ *       500:
+ *         description: Error interno del servidor.
+ */
+
+
 // Ruta para iniciar sesión y generar un token
 router.post('/login', (req, res) => {
     const { usuario, contraseña } = req.body;
@@ -31,6 +78,8 @@ router.post('/login', (req, res) => {
     });
 });
 
+
+// Middleware para verificar el token (NO ES UN ENDPOINT, NO SE DOCUMENTA EN SWAGGER)
 function verificarToken(req, res, next) {
     const token = req.headers['authorization'];
 
