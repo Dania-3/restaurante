@@ -9,7 +9,7 @@ const SECRET_KEY = 'contraseña_secreta';
 router.post('/login', (req, res) => {
     const { usuario, contraseña } = req.body;
 
-    connection.query('SELECT pk_id_usuario, usuario, contrasena FROM usuarios, tipo_usuario  WHERE usuario = "admin" and contrasena = "123456" and pk_id_tipo = 1', [usuario, contraseña], (error, results) => {
+    connection.query('SELECT pk_id_usuario, usuario, contrasena FROM usuarios, tipo_usuario  WHERE usuario = "pedro" and contrasena = "pedr0" and pk_id_tipo = 1', [usuario, contraseña], (error, results) => {
         if (error) return res.status(500).json({ error: error.message });
 
         if (results.length === 0) return res.status(401).json({ mensaje: "Usuario no encontrado" });

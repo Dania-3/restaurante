@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const jwt = require('jsonwebtoken');
+const { connection } = require('./config/config.db');
 
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
@@ -19,7 +20,7 @@ app.use('/api', reservacionesRoute);
 app.use('/api', usuariosRoute);
 app.use('/api', loginRoute);
 
-const PORT = process.env.PORT;
+const PORT = process.env.SERVER_PORT || 3000;
 app.listen(PORT,() => {
   console.log('El servidor escucha en el puerto ' + PORT);
 });
