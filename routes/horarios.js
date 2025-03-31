@@ -44,6 +44,25 @@ router.post('/horarios', verificarToken,(req, res) => {
     );
 });
 
+// Mostrar un horario específico
+router.get('/horarios/:id', verificarToken, (req, res) => {
+    const { id } = req.params;
+    if (!connection) {
+        return res.status(500).json({ error: 'No se pudo establecer conexión con la base de datos.' });
+    }
+
+    connection.query('SELECT * FROM horarios WHERE pk_id_horario = ?', [id], (error, results) => {
+        if (error) {
+            return res.status(500).json({ error: error.message });
+        }
+        if (results.length === 0) {
+            return res.status(404).json({ error: 'Horario no encontrado' });
+        }
+        res.status(200).json(results[0]);
+    });
+});
+
+
 //Actualizar horario
 router.put('/horarios/:id', verificarToken,(req, res) => {
     if (!connection) {
