@@ -4,18 +4,34 @@ const { connection } = require('../config/config.db');
 const { verificarToken } = require('./login');
 
 //Mostrar horarios
-router.get('/horarios', verificarToken,(req, res) => {
+// router.get('/horarios', verificarToken,(req, res) => {
+//     if (!connection) {
+//         return res.status(500).json({ error: 'No se pudo establecer conexión con la base de datos.' });
+//     }
+
+//     connection.query('SELECT * FROM horarios', (error, results) => {
+//         if (error) {
+//             res.status(500).json({ error: error.message });
+//             return;
+//         }
+//         res.status(200).json(results);
+//     });
+// });
+router.get('/horarios/:id', verificarToken, (req, res) => {
+    const { id } = req.params;
     if (!connection) {
         return res.status(500).json({ error: 'No se pudo establecer conexión con la base de datos.' });
     }
 
-    connection.query('SELECT * FROM horarios', (error, results) => {
+    connection.query('SELECT * FROM horarios WHERE pk_id_horario = ?', [id], (error, results) => {
         if (error) {
-            res.status(500).json({ error: error.message });
-            return;
+            return res.status(500).json({ error: error.message });
         }
-        res.status(200).json(results);
-    });
+        if (results.length === 0) {
+            return res.status(404).json({ error: 'Horario no encontrado' });
+        }
+        res.status(200).json(results[0]);
+    });
 });
 
 //Agregar horario
