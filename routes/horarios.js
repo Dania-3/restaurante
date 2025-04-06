@@ -4,7 +4,7 @@ const { connection } = require('../config/config.db');
 const { verificarToken } = require('./login');
 
 //Mostrar horarios
-router.get('/horarios', verificarToken,(req, res) => {
+router.get('/horarios', verificarToken, (req, res) => {
     if (!connection) {
         return res.status(500).json({ error: 'No se pudo establecer conexión con la base de datos.' });
     }
@@ -18,8 +18,9 @@ router.get('/horarios', verificarToken,(req, res) => {
     });
 });
 
+
 //Agregar horario
-router.post('/horarios', verificarToken,(req, res) => {
+router.post('/horarios', verificarToken, (req, res) => {
     if (!connection) {
         return res.status(500).json({ error: 'No se pudo establecer conexión con la base de datos.' });
     }
@@ -64,12 +65,12 @@ router.get('/horarios/:id', verificarToken, (req, res) => {
 
 
 //Actualizar horario
-router.put('/horarios/:id', verificarToken,(req, res) => {
+router.put('/horarios/:id', verificarToken, (req, res) => {
     if (!connection) {
         return res.status(500).json({ error: 'No se pudo establecer conexión con la base de datos.' });
     }
     const { id } = req.params;
-    const { hora , estado  } = req.body;
+    const { hora, estado } = req.body;
     const query = ` UPDATE horarios SET hora = ?, estado = ? WHERE pk_id_horario = ?`;
     connection.query(query, [hora, estado, id], (err, results) => {
         if (err) {

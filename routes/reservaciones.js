@@ -4,12 +4,12 @@ const { connection } = require('../config/config.db');
 const { verificarToken } = require('./login');
 
 //Mostrar reservaciones
-router.get('/reservaciones', verificarToken,(req, res) => {
+router.get('/reservaciones', (req, res) => {
     if (!connection) {
         return res.status(500).json({ error: 'No se pudo establecer conexión con la base de datos.' });
     }
-
-    connection.query('SELECT * FROM reservaciones', (error, results) => {
+    connection.query('SELECT r.pk_id_reservacion, h.hora, CONCAT(u.nombre, " ", u.apellido) AS cliente, CONCAT(m.seccion_mesa, " - ", m.numero_mesa) AS mesa, r.fecha, r.comensales, r.comentario, r.estatus FROM reservaciones AS r JOIN mesas AS m JOIN usuarios AS u JOIN horarios AS h WHERE r.fk_usuario = u.pk_id_usuario AND r.fk_mesa = m.pk_id_mesa AND r.fk_horario = h.pk_id_horario', 
+        (error, results) => {
         if (error) {
             res.status(500).json({ error: error.message });
             return;
@@ -19,7 +19,7 @@ router.get('/reservaciones', verificarToken,(req, res) => {
 });
 
 //Agregar reservacion
-router.post('/reservaciones', verificarToken,(req, res) => {
+router.post('/reservaciones', (req, res) => {
     if (!connection) {
         return res.status(500).json({ error: 'No se pudo establecer conexión con la base de datos.' });
     }
@@ -42,8 +42,8 @@ router.post('/reservaciones', verificarToken,(req, res) => {
             if (results.length === 0) {
 
                 connection.query(
-                    'INSERT INTO usuarios (fk_tipo, nombre, correo, telefono) VALUES (2, ?, ?, ?)',
-                    [nombre, correo, telefono],
+                    'INSERT INTO usuarios (fk_tipo, nombre, apellido, correo, telefono) VALUES (2, ?, ?, ?, ?)',
+                    [nombre, apellido, correo, telefono],
                     (error, results) => {
                         if (error) {
                             res.status(500).json({ error: error.message });
@@ -137,7 +137,7 @@ router.put('/reservaciones/:id', verificarToken,(req, res) => {
         return res.status(500).json({ error: 'No se pudo establecer conexión con la base de datos.' });
     }
     const { id } = req.params;
-    const { nombre, apellido, telefono, correo, hora, fecha, mesa, comensales, comentario } = req.body;
+    const { nombre, telefono, hora, fecha, mesa, comensales, comentario } = req.body;
 
     const mesaP = mesa.split(' - ');
     const seccion = mesaP[0];
