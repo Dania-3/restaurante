@@ -24,6 +24,8 @@ const horariosRoute = require('./routes/horarios');
 const reservacionesRoute = require('./routes/reservaciones');
 const usuariosRoute = require('./routes/usuarios')
 const { router: loginRoute } = require('./routes/login');
+const empleadosRoute = require('./routes/empleados')
+const administradorRoute = require('./routes/administrador')
 
 app.use(require('./routes/mesas'));
 
@@ -32,6 +34,8 @@ app.use('/api', horariosRoute);
 app.use('/api', reservacionesRoute);
 app.use('/api', usuariosRoute);
 app.use('/api', loginRoute);
+app.use('/api', empleadosRoute);
+app.use('/api', administradorRoute);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT,() => {
