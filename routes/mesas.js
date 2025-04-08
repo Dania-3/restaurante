@@ -58,7 +58,10 @@ router.put('/mesas/:id', verificarToken,(req, res) => {
             return res.status(500).send('Error en la consulta');
         }
         if (results.affectedRows > 0) {
-            res.send('Mesa actualizada correctamente');
+            res.status(200).json({
+                message: 'Mesa actualizada correctamente',
+                mesaId: id
+            });
         } else {
             res.status(404).send('Mesa no encontrada');
         }
