@@ -4,7 +4,7 @@ const { connection } = require('../config/config.db');
 const { verificarToken } = require('./login');
 
 //Mostrar reservaciones
-router.get('/reservaciones', (req, res) => {
+router.get('/reservaciones', verificarToken, (req, res) => {
     if (!connection) {
         return res.status(500).json({ error: 'No se pudo establecer conexión con la base de datos.' });
     }
@@ -19,7 +19,7 @@ router.get('/reservaciones', (req, res) => {
 });
 
 //Agregar reservacion
-router.post('/reservaciones', (req, res) => {
+router.post('/reservaciones', verificarToken, (req, res) => {
     if (!connection) {
         return res.status(500).json({ error: 'No se pudo establecer conexión con la base de datos.' });
     }

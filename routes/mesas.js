@@ -18,6 +18,7 @@ router.get('/mesas', verificarToken,(req, res) => {
     });
 });
 
+
 //Agregar mesas
 router.post('/mesas', verificarToken,(req, res) => {
     if (!connection) {

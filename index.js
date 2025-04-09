@@ -19,13 +19,16 @@ var corsOptions = {
 
 app.use(cors(corsOptions));
 
+// app.use("/nodemailer", nodemailer);
+// const transporter = require("./correo/nodemailer")
+
 const mesasRoute = require('./routes/mesas');
 const horariosRoute = require('./routes/horarios');
 const reservacionesRoute = require('./routes/reservaciones');
 const usuariosRoute = require('./routes/usuarios')
 const { router: loginRoute } = require('./routes/login');
-const empleadosRoute = require('./routes/empleados')
-const administradorRoute = require('./routes/administrador')
+const empleadosRoute = require('./routes/empleados');
+const administradorRoute = require('./routes/administrador');
 
 app.use(require('./routes/mesas'));
 
