@@ -14,7 +14,7 @@ router.get('/empleados/:id', verificarToken, (req, res) => {
     // Realizar consulta para obtener los datos del empleado por id
     connection.query(
         `SELECT e.pk_id_empleado, t.nombre AS fk_tipo, CONCAT(u.nombre, " ", u.apellido) AS nombre,
-        u.correo, u.telefono, e.fecha_nacimiento, e.direccion, e.curp, e.rfc, e.salario
+        u.correo, u.telefono, e.fecha_nacimiento, e.direccion, e.curp, e.rfc, e.salario, e.estado
         FROM empleados e
         JOIN usuarios u ON e.fk_usuario = u.pk_id_usuario
         JOIN tipo_usuario t ON u.fk_tipo = t.pk_id_tipo
@@ -113,7 +113,7 @@ router.put('/empleados/:id', verificarToken, (req, res) => {
         return res.status(500).json({ error: 'No se pudo establecer conexión con la base de datos.' });
     }
     const { id } = req.params;
-    const { fk_tipo, correo, telefono, direccion, curp, rfc, salario } = req.body;
+    const { fk_tipo, correo, telefono, direccion, curp, rfc, salario, estado } = req.body;
 
     if (!fk_tipo || !correo || !telefono || !direccion || !curp || !rfc || !salario) {
         return res.status(400).json({ error: 'Faltan datos para actualizar el empleado.' });
@@ -138,8 +138,8 @@ router.put('/empleados/:id', verificarToken, (req, res) => {
             const usuarioId = results[0].fk_usuario;
 
             connection.query(
-                'UPDATE usuarios SET fk_tipo = ?, correo = ?, telefono = ? WHERE pk_id_usuario = ?',
-                [tipoId, correo, telefono, usuarioId],
+                'UPDATE usuarios SET fk_tipo = ?, correo = ?, telefono = ?, estado = ? WHERE pk_id_usuario = ?',
+                [tipoId, correo, telefono, estado, usuarioId],
                 (error, results) => {
                     if (error) {
                         return res.status(500).json({ error: error.message });
@@ -149,8 +149,8 @@ router.put('/empleados/:id', verificarToken, (req, res) => {
                     }
 
                     connection.query(
-                        'UPDATE empleados SET direccion = ?, curp = ?, rfc = ?, salario = ? WHERE pk_id_empleado = ?',
-                        [direccion, curp, rfc, salario, id],
+                        'UPDATE empleados SET direccion = ?, curp = ?, rfc = ?, salario = ?, estado = ? WHERE pk_id_empleado = ?',
+                        [direccion, curp, rfc, salario, estado, id],
                         (error, results) => {
                             if (error) {
                                 return res.status(500).json({ error: error.message });
