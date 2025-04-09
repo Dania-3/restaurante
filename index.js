@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const jwt = require('jsonwebtoken');
-const swaggerJsdoc = require("swagger-jsdoc");
+const swaggerJSDoc = require("swagger-jsdoc"); // Mantén esta importación
 const swaggerUi = require("swagger-ui-express");
 
 const swaggerOptions = {
@@ -33,27 +33,24 @@ const swaggerDocs = swaggerJSDoc(swaggerOptions);
 // Configurar Swagger en Express
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
-
 app.use(express.json());
-app.use(express.urlencoded({extended: true}));
+app.use(express.urlencoded({ extended: true }));
 
 const mesasRoute = require('./routes/mesas');
 const horariosRoute = require('./routes/horarios');
 const reservacionesRoute = require('./routes/reservaciones');
-const usuariosRoute = require('./routes/usuarios')
+const usuariosRoute = require('./routes/usuarios');
 const { router: loginRoute } = require('./routes/login');
-const swaggerJSDoc = require('swagger-jsdoc');
 
-//app.use(require('./routes/mesas'));
-
+// Configurar rutas
 app.use('/api', mesasRoute);
 app.use('/api', horariosRoute);
 app.use('/api', reservacionesRoute);
 app.use('/api', usuariosRoute);
 app.use('/api', loginRoute);
 
-const PORT = process.env.PORT;
-app.listen(PORT,() => {
+const PORT = process.env.PORT || 3000;  // Asegúrate de que el puerto esté definido
+app.listen(PORT, () => {
   console.log('El servidor escucha en el puerto ' + PORT);
   console.log(`Documentación en http://localhost:${PORT}/api-docs`);
 });
