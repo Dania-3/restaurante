@@ -10,7 +10,9 @@ router.post('/login', (req, res) => {
     const { usuario, contrasena } = req.body;
 
     connection.query(
-    'SELECT pk_id_usuario, usuario, contrasena FROM usuarios, tipo_usuario WHERE usuario = ? and contrasena = ? and pk_id_tipo = 1', 
+    `SELECT t.nombre, u.usuario, u.contrasena, CONCAT(u.nombre, ' ', u.apellido) AS nombre_completo
+        FROM usuarios u , tipo_usuario t 
+        WHERE u.usuario = ? AND u.contrasena = ? AND t.pk_id_tipo = 1;`, 
         [usuario, contrasena], (error, results) => {
         if (error) return res.status(500).json({ error: error.message });
 
@@ -20,14 +22,17 @@ router.post('/login', (req, res) => {
 
         // Crear token
         const token = jwt.sign(
-            { id: usuarioDB.id_usuario, usuario: usuarioDB.usuario },
+            { id: usuarioDB.pk_id_usuario, usuario: usuarioDB.usuario },
             SECRET_KEY,
-            { expiresIn: "24h" }
+            { expiresIn: "8h" }
         );
 
         console.log("Token generado", token);
 
-        res.json({ token });
+        res.json({ token,
+            nombre: usuarioDB.nombre_completo,
+            puesto: usuarioDB.nombre
+         });
     });
 });
 
