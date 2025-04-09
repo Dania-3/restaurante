@@ -58,8 +58,8 @@ router.post('/reservaciones', (req, res) => {
         return res.status(400).json({ error: 'Faltan datos para agregar la reservación.' });
     }
     const mesaP = mesa.split(' - ');
-    const seccion = mesaP[0];
-    const numero = mesaP[1];
+    const seccion = mesaP[1];
+    const numero = mesaP[0];
 
     connection.query(
         'SELECT pk_id_usuario FROM usuarios WHERE nombre = ? AND telefono = ?',
@@ -115,7 +115,9 @@ router.post('/reservaciones', (req, res) => {
                                     return res.status(400).json({ error: 'El horario no existe o no esta disponible.' });
                                 }
                                 const horarioId = results[0].pk_id_horario;
-
+                                console.log("Usuario ID: ", usuarioId);
+                                console.log("Mesa ID: ", mesaId);
+                                console.log("Horario ID: ", horarioId);
                                 connection.query(
                                     'INSERT INTO reservaciones (fk_usuario, fk_mesa, fk_horario, fecha, comensales, comentario, estatus) VALUES (?, ?, ?, ?, ?, ?, "Activo")',
                                     [usuarioId, mesaId, horarioId, fecha, comensales, comentario],
@@ -162,6 +164,7 @@ router.post('/reservaciones', (req, res) => {
 });
 
 //actualizar reservacion
+//cambiar estado de los horarios y mesas
 router.put('/reservaciones/:id', verificarToken,(req, res) => {
     if (!connection) {
         return res.status(500).json({ error: 'No se pudo establecer conexión con la base de datos.' });
@@ -172,6 +175,7 @@ router.put('/reservaciones/:id', verificarToken,(req, res) => {
     const mesaP = mesa.split(' - ');
     const seccion = mesaP[0];
     const numero = mesaP[1];
+    console.log("Datos recibidos en la solicitud PUT:", req.body);
 
     connection.query(
         'SELECT pk_id_usuario FROM usuarios WHERE nombre = ? AND telefono = ?',
@@ -219,7 +223,7 @@ router.put('/reservaciones/:id', verificarToken,(req, res) => {
                                     if (error) {
                                         return res.status(500).json({ error: error.message });
                                     }
-
+                                    console.log("Resultados de la consulta UPDATE:", results);
                                     if (results.affectedRows === 0) {
                                         return res.status(404).json({ error: 'La reservación no fue encontrada.' });
                                     }

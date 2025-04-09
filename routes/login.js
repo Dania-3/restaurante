@@ -12,7 +12,7 @@ router.post('/login', (req, res) => {
     connection.query(
     `SELECT t.nombre, u.usuario, u.contrasena, CONCAT(u.nombre, ' ', u.apellido) AS nombre_completo
         FROM usuarios u , tipo_usuario t 
-        WHERE u.usuario = ? AND u.contrasena = ? AND t.pk_id_tipo = 1`, 
+        WHERE u.usuario = ? AND u.contrasena = ? AND t.pk_id_tipo = 1;`, 
         [usuario, contrasena], (error, results) => {
         if (error) return res.status(500).json({ error: error.message });
 
