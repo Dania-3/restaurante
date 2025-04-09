@@ -18,6 +18,21 @@ router.get('/horarios', verificarToken, (req, res) => {
     });
 });
 
+// Obtener todas las horas disponibles
+router.get('/horariosDisp', verificarToken, (req, res) => {
+    if (!connection) {
+        return res.status(500).json({ error: 'No se pudo establecer conexión con la base de datos.' });
+    }
+
+    connection.query('SELECT hora FROM horarios WHERE estado = "Disponible"', (error, results) => {
+        if (error) {
+            return res.status(500).json({ error: error.message });
+        }
+
+        res.status(200).json(results); // Devolver las horas disponibles al frontend
+    });
+});
+
 
 //Agregar horario
 router.post('/horarios', verificarToken, (req, res) => {
@@ -78,9 +93,12 @@ router.put('/horarios/:id', verificarToken, (req, res) => {
             return res.status(500).send('Error en la consulta');
         }
         if (results.affectedRows > 0) {
-            res.send('Horario actualizado correctamente');
+            res.status(200).json({
+                message: 'Horario actualizada correctamente',
+                mesaId: id
+            });
         } else {
-            res.status(404).send('Horario no encontrado');
+            res.status(404).send('Horario no encontrada');
         }
     });
 });

@@ -18,6 +18,22 @@ router.get('/mesas', verificarToken,(req, res) => {
     });
 });
 
+// Obtener todas las mesas
+router.get('/mesasDisp', verificarToken, (req, res) => {
+    if (!connection) {
+        return res.status(500).json({ error: 'No se pudo establecer conexión con la base de datos.' });
+    }
+
+    connection.query('SELECT numero_mesa, seccion_mesa FROM mesas WHERE estado = "Disponible"',
+        (error, results) => {
+        if (error) {
+            return res.status(500).json({ error: error.message });
+        }
+
+        res.status(200).json(results);
+    });
+});
+
 
 //Agregar mesas
 router.post('/mesas', verificarToken,(req, res) => {
@@ -59,7 +75,10 @@ router.put('/mesas/:id', verificarToken,(req, res) => {
             return res.status(500).send('Error en la consulta');
         }
         if (results.affectedRows > 0) {
-            res.send('Mesa actualizada correctamente');
+            res.status(200).json({
+                message: 'Mesa actualizada correctamente',
+                mesaId: id
+            });
         } else {
             res.status(404).send('Mesa no encontrada');
         }

@@ -8,7 +8,7 @@ router.get('/reservaciones', verificarToken, (req, res) => {
     if (!connection) {
         return res.status(500).json({ error: 'No se pudo establecer conexión con la base de datos.' });
     }
-    connection.query('SELECT r.pk_id_reservacion, h.hora, CONCAT(u.nombre, " ", u.apellido) AS cliente, CONCAT(m.seccion_mesa, " - ", m.numero_mesa) AS mesa, r.fecha, r.comensales, r.comentario, r.estatus FROM reservaciones AS r JOIN mesas AS m JOIN usuarios AS u JOIN horarios AS h WHERE r.fk_usuario = u.pk_id_usuario AND r.fk_mesa = m.pk_id_mesa AND r.fk_horario = h.pk_id_horario', 
+    connection.query('SELECT r.pk_id_reservacion, CONCAT(u.nombre, " ", u.apellido) AS cliente, u.correo, u.telefono, r.fecha, h.hora, CONCAT(m.seccion_mesa, " - ", m.numero_mesa) AS mesa, r.comensales, r.estatus FROM reservaciones AS r JOIN mesas AS m JOIN usuarios AS u JOIN horarios AS h WHERE r.fk_usuario = u.pk_id_usuario AND r.fk_mesa = m.pk_id_mesa AND r.fk_horario = h.pk_id_horario', 
         (error, results) => {
         if (error) {
             res.status(500).json({ error: error.message });
@@ -18,13 +18,43 @@ router.get('/reservaciones', verificarToken, (req, res) => {
     });
 });
 
+router.get('/reservaciones/:id', verificarToken, (req, res) => {
+    const { id } = req.params;
+
+    if (!connection) {
+        return res.status(500).json({ error: 'No se pudo establecer conexión con la base de datos.' });
+    }
+
+    // Realizar consulta para obtener los datos del empleado por id
+    connection.query(
+        `SELECT r.pk_id_reservacion, u.nombre, u.apellido, u.correo, u.telefono, r.fecha, h.hora, 
+        CONCAT(m.seccion_mesa, " - ", m.numero_mesa) AS mesa, r.comensales, r.estatus FROM reservaciones AS r 
+        JOIN mesas AS m JOIN usuarios AS u JOIN horarios AS h WHERE r.fk_usuario = u.pk_id_usuario 
+        AND r.fk_mesa = m.pk_id_mesa AND r.fk_horario = h.pk_id_horario AND r.pk_id_reservacion = ?`,
+        [id],
+        (err, results) => {
+            if (err) {
+                console.error('Error al ejecutar la consulta: ' + err.stack);
+                return res.status(500).send('Error en la consulta');
+            }
+
+            if (results.length > 0) {
+                res.json(results[0]);
+            } else {
+                res.status(404).send('Reservacion no encontrado');
+            }
+        }
+    );
+});
+
 //Agregar reservacion
-router.post('/reservaciones', verificarToken, (req, res) => {
+router.post('/reservaciones', (req, res) => {
+    console.log("Datos recibidos:", req.body); 
     if (!connection) {
         return res.status(500).json({ error: 'No se pudo establecer conexión con la base de datos.' });
     }
     const { nombre, apellido, telefono, correo, hora, fecha, mesa, comensales, comentario } = req.body;
-    if (!nombre || !apellido || !telefono || !correo || !hora || !fecha || !mesa || !comensales || !comentario) {
+    if (!nombre || !apellido || !telefono || !correo || !hora || !fecha || !mesa || !comensales) {
         return res.status(400).json({ error: 'Faltan datos para agregar la reservación.' });
     }
     const mesaP = mesa.split(' - ');
