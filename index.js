@@ -34,23 +34,28 @@ const swaggerDocs = swaggerJSDoc(swaggerOptions);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({extended: true}));
+
+const loginRoutes = require('./routes/login');
 
 const mesasRoute = require('./routes/mesas');
 const horariosRoute = require('./routes/horarios');
 const reservacionesRoute = require('./routes/reservaciones');
-const usuariosRoute = require('./routes/usuarios');
-const { router: loginRoute } = require('./routes/login');
+const usuariosRoute = require('./routes/usuarios')
+const empleadosRoute = require('./routes/empleados')
+//const { router: loginRoute } = require('./routes/login');
 
-// Configurar rutas
+app.use(require('./routes/mesas'));
+
 app.use('/api', mesasRoute);
 app.use('/api', horariosRoute);
 app.use('/api', reservacionesRoute);
 app.use('/api', usuariosRoute);
-app.use('/api', loginRoute);
-
-const PORT = process.env.PORT || 3000;  // Asegúrate de que el puerto esté definido
-app.listen(PORT, () => {
+app.use('/api', empleadosRoute);
+//app.use('/api', loginRoute);
+app.use('/', loginRoutes.router);
+const PORT = process.env.PORT;
+app.listen(PORT,() => {
   console.log('El servidor escucha en el puerto ' + PORT);
   console.log(`Documentación en http://localhost:${PORT}/api-docs`);
 });
