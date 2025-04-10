@@ -75,22 +75,26 @@ router.get('/mesas', verificarToken,(req, res) => {
  *               items:
  *                 type: object
  *                 properties:
- *                   numero_mesa:
- *                     type: integer
- *                     description: Número de la mesa
  *                   seccion_mesa:
  *                     type: string
- *                     description: Sección de la mesa
+ *                     example: A
+ *                   numero_mesa:
+ *                     type: integer
+ *                     example: 5
+ *                   capacidad:
+ *                     type: integer
+ *                     example: 4
  *       500:
- *         description: Error al obtener las mesas disponibles
+ *         description: Error al conectar con la base de datos o ejecutar la consulta
  */
+
 // Obtener todas las mesas
 router.get('/mesasDisp', verificarToken, (req, res) => {
     if (!connection) {
         return res.status(500).json({ error: 'No se pudo establecer conexión con la base de datos.' });
     }
 
-    connection.query('SELECT numero_mesa, seccion_mesa FROM mesas WHERE estado = "Disponible"',
+    connection.query('SELECT seccion_mesa, numero_mesa, capacidad FROM mesas WHERE estado = "Disponible"',
         (error, results) => {
         if (error) {
             return res.status(500).json({ error: error.message });

@@ -322,15 +322,85 @@ router.post('/reservaciones', (req, res) => {
     );
 });
 
-
+/**
+ * @swagger
+ * /api/reservaciones/{id}:
+ *   put:
+ *     summary: Actualizar una reservación existente
+ *     tags: [Reservaciones]
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         description: ID de la reservación a actualizar
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - nombre
+ *               - telefono
+ *               - hora
+ *               - fecha
+ *               - mesa
+ *               - comensales
+ *               - estatus
+ *             properties:
+ *               nombre:
+ *                 type: string
+ *                 description: Nombre del cliente
+ *               telefono:
+ *                 type: string
+ *                 description: Teléfono del cliente
+ *               hora:
+ *                 type: string
+ *                 description: Hora de la reservación
+ *               fecha:
+ *                 type: string
+ *                 format: date
+ *                 description: Fecha de la reservación
+ *               mesa:
+ *                 type: string
+ *                 description: Identificador de mesa
+ *                 example: "A - 5"
+ *               comensales:
+ *                 type: integer
+ *                 description: Cantidad de comensales
+ *               estatus:
+ *                 type: string
+ *                 description: Estado de la reservación
+ *     responses:
+ *       200:
+ *         description: Reservación actualizada correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Reservación actualizada correctamente.
+ *                 reservacionId:
+ *                   type: integer
+ *                   example: 1
+ *       400:
+ *         description: Datos inválidos o entidad no encontrada
+ *       404:
+ *         description: Reservación no encontrada
+ *       500:
+ *         description: Error al actualizar la reservación
+ */
 //actualizar reservacion
-//cambiar estado de los horarios y mesas
 router.put('/reservaciones/:id', verificarToken,(req, res) => {
     if (!connection) {
         return res.status(500).json({ error: 'No se pudo establecer conexión con la base de datos.' });
     }
     const { id } = req.params;
-    const { nombre, telefono, hora, fecha, mesa, comensales, comentario } = req.body;
+    const { nombre, telefono, hora, fecha, mesa, comensales, estatus } = req.body;
 
     const mesaP = mesa.split(' - ');
     const seccion = mesaP[0];
@@ -377,8 +447,8 @@ router.put('/reservaciones/:id', verificarToken,(req, res) => {
                             const horarioId = results[0].pk_id_horario;
 
                             connection.query(
-                                'UPDATE reservaciones SET fk_usuario = ?, fk_mesa = ?, fk_horario = ?, fecha = ?, comensales = ?, comentario = ?, estatus = "Activo" WHERE pk_id_reservacion = ?',
-                                [usuarioId, mesaId, horarioId, fecha, comensales, comentario, id],
+                                'UPDATE reservaciones SET fk_usuario = ?, fk_mesa = ?, fk_horario = ?, fecha = ?, comensales = ?, estatus = ? WHERE pk_id_reservacion = ?',
+                                [usuarioId, mesaId, horarioId, fecha, comensales, estatus, id],
                                 (error, results) => {
                                     if (error) {
                                         return res.status(500).json({ error: error.message });
