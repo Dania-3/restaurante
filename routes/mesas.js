@@ -24,7 +24,7 @@ router.get('/mesasDisp', verificarToken, (req, res) => {
         return res.status(500).json({ error: 'No se pudo establecer conexión con la base de datos.' });
     }
 
-    connection.query('SELECT numero_mesa, seccion_mesa FROM mesas WHERE estado = "Disponible"',
+    connection.query('SELECT seccion_mesa, numero_mesa, capacidad FROM mesas WHERE estado = "Disponible"',
         (error, results) => {
         if (error) {
             return res.status(500).json({ error: error.message });

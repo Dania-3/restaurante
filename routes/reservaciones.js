@@ -164,13 +164,12 @@ router.post('/reservaciones', (req, res) => {
 });
 
 //actualizar reservacion
-//cambiar estado de los horarios y mesas
 router.put('/reservaciones/:id', verificarToken,(req, res) => {
     if (!connection) {
         return res.status(500).json({ error: 'No se pudo establecer conexión con la base de datos.' });
     }
     const { id } = req.params;
-    const { nombre, telefono, hora, fecha, mesa, comensales, comentario } = req.body;
+    const { nombre, telefono, hora, fecha, mesa, comensales, estatus } = req.body;
 
     const mesaP = mesa.split(' - ');
     const seccion = mesaP[0];
@@ -217,8 +216,8 @@ router.put('/reservaciones/:id', verificarToken,(req, res) => {
                             const horarioId = results[0].pk_id_horario;
 
                             connection.query(
-                                'UPDATE reservaciones SET fk_usuario = ?, fk_mesa = ?, fk_horario = ?, fecha = ?, comensales = ?, comentario = ?, estatus = "Activo" WHERE pk_id_reservacion = ?',
-                                [usuarioId, mesaId, horarioId, fecha, comensales, comentario, id],
+                                'UPDATE reservaciones SET fk_usuario = ?, fk_mesa = ?, fk_horario = ?, fecha = ?, comensales = ?, estatus = ? WHERE pk_id_reservacion = ?',
+                                [usuarioId, mesaId, horarioId, fecha, comensales, estatus, id],
                                 (error, results) => {
                                     if (error) {
                                         return res.status(500).json({ error: error.message });
